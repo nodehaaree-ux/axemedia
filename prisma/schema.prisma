@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Client {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  phone           String?
+  address         String?
+  city            String?
+  businessNumber  String?
+  taxId           String?
+  notes           String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  invoices  Invoice[]
+  offers    Offer[]
+  posts     Post[]
+  user      User?
+}
+
+model Invoice {
+  id            Int           @id @default(autoincrement())
+  invoiceNumber String        @unique
+  clientId      Int
+  status        String        @default("draft")
+  issueDate     DateTime      @default(now())
+  subtotal      Float         @default(0)
+  tax           Float         @default(0)
+  total         Float         @default(0)
+  dueDate       DateTime?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  client        Client        @relation(fields: [clientId], references: [id])
+  items         InvoiceItem[]
+}
+
+model InvoiceItem {
+  id          Int     @id @default(autoincrement())
+  invoiceId   Int
+  description String
+  quantity    Float
+  unitPrice   Float
+  total       Float
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  title     String
+  amount    Float
+  category  String
+  date      DateTime @default(now())
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     String?
+  platform    String
+  status      String    @default("draft")
+  scheduledAt DateTime?
+  publishedAt DateTime?
+  clientId    Int?
+  imageUrl    String?
+  tags        String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  client      Client?   @relation(fields: [clientId], references: [id])
+}
+
+model Offer {
+  id                   Int         @id @default(autoincrement())
+  offerNumber          String      @unique
+  title                String
+  clientId             Int
+  status               String      @default("draft")
+  issueDate            DateTime    @default(now())
+  validUntil           DateTime
+  subtotal             Float       @default(0)
+  tax                  Float       @default(0)
+  total                Float       @default(0)
+  notes                String?
+  convertedToInvoiceId Int?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  client               Client      @relation(fields: [clientId], references: [id])
+  items                OfferItem[]
+}
+
+model OfferItem {
+  id          Int    @id @default(autoincrement())
+  offerId     Int
+  description String
+  quantity    Float
+  unitPrice   Float
+  total       Float
+  offer       Offer  @relation(fields: [offerId], references: [id], onDelete: Cascade)
+}
+
+model Service {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String?
+  defaultPrice Float    @default(0)
+  unit         String?  @default("copë")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CompanySettings {
+  id            Int      @id @default(autoincrement())
+  name          String   @default("AXEmedia")
+  tagline       String   @default("Agjensi Marketingu & Dizajni")
+  address       String   @default("Tiranë, Shqipëri")
+  phone         String   @default("+355 69 000 0000")
+  email         String   @default("info@axemedia.al")
+  taxId         String   @default("")
+  website       String   @default("www.axemedia.al")
+  bankAccount   String   @default("")
+  swiftCode     String   @default("")
+  logoUrl       String   @default("")
+  stampUrl      String   @default("")
+  signatureUrl  String   @default("")
+  invoiceFooter String   @default("Faleminderit për bashkëpunimin!")
+  offerFooter   String   @default("Kjo ofertë nuk është faturë. Pagesa nuk kërkohet deri pas konfirmimit.")
+  logoSize      Int      @default(22)
+  primaryColor  String   @default("#009ec6")
+  fontFamily    String   @default("helvetica")
+  updatedAt     DateTime @updatedAt
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("staff")
+  clientId  Int?     @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  client    Client?  @relation(fields: [clientId], references: [id])
+}
