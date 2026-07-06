@@ -32,7 +32,7 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
     // Create invoice from offer
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 30);
-    const offerItems: OfferItemInput[] = offer.items.map((item) => ({
+    const offerItems: OfferItemInput[] = offer.items.map((item: OfferItemInput) => ({
       description: item.description,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
