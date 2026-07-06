@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { OfferItem } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 function generateInvoiceNumber(): string {
@@ -36,7 +37,7 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
         total: offer.total,
         notes: `Konvertuar nga oferta ${offer.offerNumber}: ${offer.title}`,
         items: {
-          create: offer.items.map((item) => ({
+          create: offer.items.map((item: OfferItem) => ({
             description: item.description,
             quantity: item.quantity,
             unitPrice: item.unitPrice,
