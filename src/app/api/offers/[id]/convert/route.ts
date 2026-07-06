@@ -32,6 +32,12 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
     // Create invoice from offer
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 30);
+    const offerItems: OfferItemInput[] = offer.items.map((item) => ({
+      description: item.description,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      total: item.total,
+    }));
 
     const invoice = await prisma.invoice.create({
       data: {
@@ -43,12 +49,7 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
         total: offer.total,
         notes: `Konvertuar nga oferta ${offer.offerNumber}: ${offer.title}`,
         items: {
-          create: offer.items.map((item: OfferItemInput) => ({
-            description: item.description,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            total: item.total,
-          })),
+          create: offerItems,
         },
       },
     });
