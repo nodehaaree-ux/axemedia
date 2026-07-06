@@ -9,6 +9,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: "file:./prisma/axemedia.db",
+    url: process.env.DATABASE_URL,
   },
 });
