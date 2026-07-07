@@ -15,7 +15,7 @@ export async function GET() {
           include: { client: { select: { name: true } } },
         }),
         prisma.$queryRaw<{ month: string; revenue: number }[]>`
-          SELECT strftime('%Y-%m', issueDate) as month, SUM(total) as revenue
+          SELECT DATE_FORMAT(issueDate, '%Y-%m') as month, SUM(total) as revenue
           FROM Invoice
           WHERE status = 'paid'
           GROUP BY month
